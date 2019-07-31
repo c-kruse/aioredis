@@ -82,6 +82,7 @@ async def create_connection(address, *, db=None, password=None, ssl=None,
         password = options.setdefault('password', password)
         encoding = options.setdefault('encoding', encoding)
         timeout = options.setdefault('timeout', timeout)
+        server_hostname = options.setdefault('server_hostname', None)
         if 'ssl' in options:
             assert options['ssl'] or (not options['ssl'] and not ssl), (
                 "Conflicting ssl options are set", options['ssl'], ssl)
@@ -104,7 +105,7 @@ async def create_connection(address, *, db=None, password=None, ssl=None,
         host, port = address
         logger.debug("Creating tcp connection to %r", address)
         reader, writer = await asyncio.wait_for(open_connection(
-            host, port, limit=MAX_CHUNK_SIZE, ssl=ssl, loop=loop),
+            host, port, limit=MAX_CHUNK_SIZE, ssl=ssl, loop=loop, server_hostname=server_hostname),
             timeout, loop=loop)
         sock = writer.transport.get_extra_info('socket')
         if sock is not None:
